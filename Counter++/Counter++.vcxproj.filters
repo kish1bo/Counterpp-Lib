@@ -13,14 +13,14 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Source Files\include">
-      <UniqueIdentifier>{4d9de957-8745-4d5c-bf02-dc3a3bd7f99f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\test">
       <UniqueIdentifier>{f8fe0d9e-6741-4832-973b-1aab3c07383a}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\src">
       <UniqueIdentifier>{61d5cc06-f71e-4b5c-a994-7ff4dbc646f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\include">
+      <UniqueIdentifier>{4d9de957-8745-4d5c-bf02-dc3a3bd7f99f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
