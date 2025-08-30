@@ -5,7 +5,6 @@
 #include "counterpp.h"
 
 int main() {
-	int x = 6; int y = 9;
-	std::cout << counterpp::bitwise::and_op(x, y) << std::endl;
+	std::cout << counterpp::trygonometry::integrate([](double x) { return sin(x); }, 0.0, 3.141592653589793, 1000) << std::endl;
 	return 0;
 }

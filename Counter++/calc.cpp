@@ -3,81 +3,41 @@
 #include <cmath>
 #include <string>
 #include <sstream>
+#include <iostream>
+#include <cstdlib>
+#include <ctime>
 #include <algorithm>
-using namespace std;
+#include <functional>
+
 namespace counterpp
 {
-    int add(int first_val, int second_val) {
-        return first_val + second_val;
-    }
-
-    int sub(int first_val, int second_val) {
-        return first_val - second_val;
-    }
-
-    constexpr double sqrt(double x, double guess = 1.0) {
-        return ((guess * guess - x) < 1e-12 && (guess * guess - x) > -1e-12)
-            ? guess
-            : sqrt(x, 0.5 * (guess + x / guess));
-    }
-    namespace trygonometry
-    {
-        double normalize(double x) {
-            if (x == 0) {
-                throw std::invalid_argument("Input cannot be zero for function.");
-                return 0;
-            }
-            while (x > counterpp::trygonometry::PI) x -= 2 * counterpp::trygonometry::PI;
-            while (x < -counterpp::trygonometry::PI) x += 2 * counterpp::trygonometry::PI;
-            return x;
-        }
-
-        double sin(int sin_val) {
-            if (sin_val == 0) {
-                throw std::invalid_argument("Input cannot be zero for function.");
-                return 0;
-            }
-            normalize(sin_val);
-            sin_val == normalize(sin_val);
-            double term = sin_val;
-            double out = sin_val;
-            for (int n = 1; n < 10; n++) {
-                term *= -1 * sin_val * sin_val / ((2 * n) * (2 * n + 1));
-                out += term;
-            }
-            return out;
-        }
-
-        double cos(int cos_val) {
-            if (cos_val == 0) {
-                throw std::invalid_argument("Input cannot be zero for function.");
-                return 0;
-            }
-            double normalize(double cos_val);
-            cos_val = normalize(cos_val);
-            double term = 1;
-            double out = 1;
-            for (int n = 1; n < 10; n++) {
-                term *= -1 * cos_val * cos_val / ((2 * n - 1) * (2 * n));
-                out += term;
-            }
-            return out;
-        }
-
-        double tan(int tan_val) {
-            if (tan_val == 0) {
-                throw std::invalid_argument("Input cannot be zero for function.");
-                return 0;
-            }
-            double normalize(double tan_val);
-            tan_val = normalize(tan_val);
-            return sin(tan_val) / cos(tan_val);
-        }
-
-    }
     namespace inline_asm
     {
-        
+        int add(int first_val, int second_val) {
+            return first_val + second_val;
+        }
+
+        int sub(int first_val, int second_val) {
+            return first_val - second_val;
+        }
+
+        double sqrt(double x, double guess) {
+            if (x < 0.0) {
+                throw std::invalid_argument("Cannot compute square root of negative number.");
+            }
+            if (x == 0.0) return 0.0;
+            double g = guess;
+            for (int i = 0; i < 100; ++i) {
+                double next = 0.5 * (g + x / g);
+                if (std::fabs(next - g) < 1e-12) {
+                    g = next;
+                    break;
+                }
+                g = next;
+            }
+            return g;
+        }
+
         double log(int base, int number) {
             if (base <= 1 || number <= 0) {
                 throw std::invalid_argument("Base must be greater than 1 and number must be positive.");
@@ -97,7 +57,66 @@ namespace counterpp
             }
             return sum;
         }
-	}
+    }
+
+    namespace trygonometry
+    {
+        double normalize(double x) {
+            // Normalize to range [-PI, PI]
+            double two_pi = 2.0 * counterpp::trygonometry::PI;
+            // Use fmod to reduce magnitude first
+            x = std::fmod(x, two_pi);
+            if (x > counterpp::trygonometry::PI) x -= two_pi;
+            if (x < -counterpp::trygonometry::PI) x += two_pi;
+            return x;
+        }
+
+        double sin(double val) {
+            double x = normalize(val);
+            double term = x;
+            double out = x;
+            for (int n = 1; n < 10; n++) {
+                term *= -1.0 * x * x / ((2 * n) * (2 * n + 1));
+                out += term;
+            }
+            return out;
+        }
+
+        double cos(double val) {
+            double x = normalize(val);
+            double term = 1.0;
+            double out = 1.0;
+            for (int n = 1; n < 10; n++) {
+                term *= -1.0 * x * x / ((2 * n - 1) * (2 * n));
+                out += term;
+            }
+            return out;
+        }
+
+        double tan(double val) {
+            double x = normalize(val);
+            double c = cos(x);
+            if (std::fabs(c) < counterpp::trygonometry::EPSILON) {
+                throw std::invalid_argument("Tangent undefined: cosine is zero (or too close to zero).");
+            }
+            return sin(x) / c;
+        }
+
+        int integrate(std::function<double(double)> f, double a, double b, int n) {
+            if (n <= 0) {
+                throw std::invalid_argument("Number of intervals must be positive.");
+            }
+
+            double h = (b - a) / n;
+            double sum = 0.5 * (f(a) + f(b));
+
+            for (int i = 1; i < n; i++) {
+                double x = a + i * h;
+                sum += f(x);
+            }
+            return static_cast<int>(sum * h); // Cast to int for return type
+        }
+    }
    
     namespace statistics {
         int mean(int* arr, int size) {
@@ -179,7 +198,7 @@ namespace counterpp
             if (size <= 0) {
                 throw std::invalid_argument("Array size must be positive.");
             }
-            return sqrt(variance(arr, size));
+            return inline_asm::sqrt(variance(arr, size));
         }
     }
     namespace interpolation
@@ -206,25 +225,76 @@ namespace counterpp
                     t * (3.0 * (p1 - p2) + p3 - p0)));
         }
     }
-    namespace bitwise
+     namespace bitwise
     {
-        int and_op(int a, int b) {
+        constexpr int and_op(int a, int b) {
             return a & b;
         }
-        int or_op(int a, int b) {
+        constexpr int or_op(int a, int b) {
             return a | b;
         }
-        int xor_op(int a, int b) {
+        constexpr int xor_op(int a, int b) {
             return a ^ b;
         }
-        int not_op(int a) {
+        constexpr int not_op(int a) {
             return ~a;
         }
-        int left_shift(int a, int n) {
+        constexpr int left_shift(int a, int n) {
             return a << n;
         }
-        int right_shift(int a, int n) {
+        constexpr int right_shift(int a, int n) {
             return a >> n;
+        }
+    }
+    namespace random
+    {
+       int rand_int(int min, int max) {
+           srand(static_cast<unsigned>(time(0)));
+            if (min > max) {
+                throw std::invalid_argument("Min must be less than or equal to max.");
+            }
+            return min + rand() % (max - min + 1);
+        }
+        double rand_double(double min, double max) {
+            srand(static_cast<unsigned>(time(0)));
+            if (min >= max) {
+                throw std::invalid_argument("Min must be less than max.");
+            }
+            return min + static_cast<double>(rand()) / (static_cast<double>(RAND_MAX / (max - min)));
+        }
+        void seed(unsigned int seed) {
+            srand(seed);
+		}
+
+        std::string randomKey(KeyType type, int length) {
+            srand(static_cast<unsigned>(time(0)));
+
+            if (length <= 0) {
+                throw std::invalid_argument("Length must be positive.");
+            }
+
+            std::string characters;
+
+            switch (type) {
+            case KeyType::Letters:
+                characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+                break;
+            case KeyType::Numbers:
+                characters = "0123456789";
+                break;
+            case KeyType::Mixed:
+                characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+                break;
+            default:
+                throw std::invalid_argument("Invalid KeyType.");
+            }
+
+            std::string key;
+            for (int i = 0; i < length; i++) {
+                key += characters[rand() % characters.length()];
+            }
+
+            return key;
         }
     }
 }
