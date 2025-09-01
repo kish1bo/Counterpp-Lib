@@ -3,8 +3,11 @@
 #define _CRT_NONSTDC_NO_DEPRECATE
 #include <iostream> 
 #include "counterpp.h"
+#include <chrono>
+#include <ctime>
+#include <thread>
 
 int main() {
-	std::cout << counterpp::trygonometry::integrate([](double x) { return sin(x); }, 0.0, 3.141592653589793, 1000) << std::endl;
-	return 0;
-}
+	int x = counterpp::bits::clearbit(4, 2);
+	std::cout << x << std::endl;
+} 

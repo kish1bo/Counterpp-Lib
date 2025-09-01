@@ -6,6 +6,7 @@
 #define CONST_EPSILON 1e-10
 #define COUNTERPP_VERSION "1.0.2"
 #define COUNTERPP_FAST_MATH
+#define OUT_OF_WORK throw std::runtime_error("Not implemented yet.");
 
 #include <string>
 #include <stdexcept>
@@ -15,16 +16,17 @@
 #include <functional>
 
 namespace counterpp {
-	enum class KeyType {
-		Letters, //Only Letters in key
-		Numbers, //Only Numbers in key
-		Mixed //Mix of Letters and Numbers in key
+
+	enum class chartype {
+		Letters, //Letters
+		Numbers, //Number
+		Mixed //Mix of Letters and Numbers
 	};
 
 	namespace trygonometry{
-		constexpr double PI = CONST_PI;
+		constexpr double PI = CONST_PI; 
 		constexpr double E = CONST_E;
-		constexpr double EPSILON = 1e-10;
+		constexpr double EPSILON = 1e-10; 
 		constexpr double GOLDEN_RATIO = 1.618033988749895;
 		double normalize(double val); // Normalize angle to range [-PI, PI]
 		double sin(double val); // Sine function
@@ -47,11 +49,7 @@ namespace counterpp {
 		int frequency(int* arr, int size, int val); // Frequency of a value in an array
 	}
 	namespace inline_asm {
-		int add(int first_val, int second_val); // Add two integers
-		int sub(int first_val, int second_val); // Subtraction of two integers
-		double log(int base, int number); // Logarithm with arbitrary base
-		double sqrt(double x, double guess = 1.0); // Square root using Newton's method
-		double exp(double x); // Exponential function e^x
+		
 	}
 	namespace bitwise {
 		constexpr int and_op(int a, int b); // Bitwise AND
@@ -64,7 +62,13 @@ namespace counterpp {
 	namespace random {
 		int rand_int(int min, int max); // Generate a random integer between min and max
 		double rand_double(double min, double max); // Generate a random double between min and max
-		std::string randomKey(KeyType type, int Length);// Generate a random key of specified type and length, types: Letters, Numbers, Mixed
+		std::string randomKey(chartype type, int Length);// Generate a random key of specified type and length, types: Letters, Numbers, Mixed
 		void seed(unsigned int seed); // Seed the random number generator
+	}
+	namespace bits {
+		int bienaryquery(int number, int position); // Query the bit at a specific position in an integer
+		int setbit(int number, int position); // Set the bit at a specific position in an integer
+		int clearbit(int number, int position); // Clear the bit at a specific position in an integer
+		int togglebit(int number, int position); // Toggle the bit at a specific position in an integer
 	}
 }

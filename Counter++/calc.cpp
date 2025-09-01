@@ -13,52 +13,7 @@ namespace counterpp
 {
     namespace inline_asm
     {
-        int add(int first_val, int second_val) {
-            return first_val + second_val;
-        }
-
-        int sub(int first_val, int second_val) {
-            return first_val - second_val;
-        }
-
-        double sqrt(double x, double guess) {
-            if (x < 0.0) {
-                throw std::invalid_argument("Cannot compute square root of negative number.");
-            }
-            if (x == 0.0) return 0.0;
-            double g = guess;
-            for (int i = 0; i < 100; ++i) {
-                double next = 0.5 * (g + x / g);
-                if (std::fabs(next - g) < 1e-12) {
-                    g = next;
-                    break;
-                }
-                g = next;
-            }
-            return g;
-        }
-
-        double log(int base, int number) {
-            if (base <= 1 || number <= 0) {
-                throw std::invalid_argument("Base must be greater than 1 and number must be positive.");
-            }
-            return std::log(number) / std::log(base);
-        }
-
-        double exp(double x) {
-            if (x == 0) {
-                return 1.0;
-            }
-            double term = 1.0;
-            double sum = 1.0;
-            for (int n = 1; n < 20; n++) {
-                term *= x / n;
-                sum += term;
-            }
-            return sum;
-        }
     }
-
     namespace trygonometry
     {
         double normalize(double x) {
@@ -117,7 +72,6 @@ namespace counterpp
             return static_cast<int>(sum * h); // Cast to int for return type
         }
     }
-   
     namespace statistics {
         int mean(int* arr, int size) {
             if (size <= 0) {
@@ -173,7 +127,7 @@ namespace counterpp
             std::sort(sorted, sorted + size);
             double median;
             if (size % 2 == 0) {
-                median = (sorted[size / 2 - 1] + sorted[size / 2]) / 2.0;
+                median = (sorted[size / 2 - 1] + sorted[size / 2]) * 0.5;
             }
             else {
                 median = sorted[size / 2];
@@ -198,7 +152,7 @@ namespace counterpp
             if (size <= 0) {
                 throw std::invalid_argument("Array size must be positive.");
             }
-            return inline_asm::sqrt(variance(arr, size));
+            return std::sqrt(variance(arr, size));
         }
     }
     namespace interpolation
@@ -225,7 +179,7 @@ namespace counterpp
                     t * (3.0 * (p1 - p2) + p3 - p0)));
         }
     }
-     namespace bitwise
+    namespace bitwise
     {
         constexpr int and_op(int a, int b) {
             return a & b;
@@ -266,7 +220,7 @@ namespace counterpp
             srand(seed);
 		}
 
-        std::string randomKey(KeyType type, int length) {
+        std::string randomKey(chartype type, int length) {
             srand(static_cast<unsigned>(time(0)));
 
             if (length <= 0) {
@@ -276,13 +230,13 @@ namespace counterpp
             std::string characters;
 
             switch (type) {
-            case KeyType::Letters:
+            case chartype::Letters:
                 characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
                 break;
-            case KeyType::Numbers:
+            case chartype::Numbers:
                 characters = "0123456789";
                 break;
-            case KeyType::Mixed:
+            case chartype::Mixed:
                 characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
                 break;
             default:
@@ -295,6 +249,24 @@ namespace counterpp
             }
 
             return key;
+        }
+    }
+    namespace bits {
+        int bienaryquery(int number, int position) {
+            if (position < 0 || position >= static_cast<int>(sizeof(number) * 8)) throw std::out_of_range("bit position");
+            return (static_cast<uint32_t>(number) >> position) & 1u;
+        }
+        int setbit(int number, int position) {
+            if (position < 0 || position >= static_cast<int>(sizeof(number) * 8)) throw std::out_of_range("bit position");
+            return static_cast<int>(static_cast<uint32_t>(number) | (1u << position));
+        }
+        int clearbit(int number, int position) {
+            if (position < 0 || position >= static_cast<int>(sizeof(number) * 8)) throw std::out_of_range("bit position");
+            return static_cast<int>(static_cast<uint32_t>(number) & ~(1u << position));
+        }
+        int togglebit(int number, int position) {
+            if (position < 0 || position >= static_cast<int>(sizeof(number) * 8)) throw std::out_of_range("bit position");
+            return static_cast<int>(static_cast<uint32_t>(number) ^ (1u << position));
         }
     }
 }

@@ -1,0 +1,2 @@
+C:/Users/thewi/source/repos/Counter++/Counter++/build/CMakeFiles/edit_cache.dir
+C:/Users/thewi/source/repos/Counter++/Counter++/build/CMakeFiles/rebuild_cache.dir
